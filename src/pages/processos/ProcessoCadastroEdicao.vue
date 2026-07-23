@@ -45,10 +45,11 @@
           <div class="col-6">
             <SelectComponent
               v-model="formData.tipoAcaoProcesso"
-              label="Tipo de Ação"
+              label="Tipo de Ação*"
               :options="tipoAcao"
               option-value="value"
               option-label="title"
+              :rules="[val => requiredField(val, 'Tipo de Ação')]"
             />
           </div>
 
