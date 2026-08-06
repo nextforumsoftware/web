@@ -28,6 +28,9 @@ const extensionMap: Record<string, FileIconResult> = {
   webp: { icon: 'image', color: 'teal-6' },
   svg:  { icon: 'image', color: 'teal-6' },
 
+  // Vídeo
+  mp4: { icon: 'movie', color: 'purple-6' },
+
   // Compactados
   zip: { icon: 'folder_zip', color: 'amber-7' },
   rar: { icon: 'folder_zip', color: 'amber-7' },

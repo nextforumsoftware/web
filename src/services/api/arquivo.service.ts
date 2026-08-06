@@ -35,7 +35,8 @@ export function useArquivoService(resource?: any) {
     const response = await api.post('/arquivos', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
-      }
+      },
+      timeout: 120000
     })
     return response.data
   }

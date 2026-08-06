@@ -44,7 +44,7 @@
       <div>
         <NextforumFileInput
           :accept="tiposPermitidos"
-          accept-hint="Use PDF, imagem, Word, Excel ou CSV."
+          accept-hint="Use PDF, imagem, Word, Excel, CSV ou vídeo MP4 (até 50MB)."
           :max-size-mb="50"
           @change="onFilesSelected"
         >
@@ -220,6 +220,13 @@
     :loading="pdfLoading"
   />
 
+  <VideoPlayerDialog
+    v-model="videoDialog"
+    :arquivo="selectedArquivo"
+    :video-url="videoUrl"
+    :loading="videoLoading"
+  />
+
   <UploadArquivosDialog
     v-model="uploadDialog"
     :files="filesToUpload"
@@ -230,6 +237,7 @@
 
 <script setup lang="ts">
 import PdfViewerDialog from '@/components/documentos/PdfViewerDialog.vue'
+import VideoPlayerDialog from '@/components/documentos/VideoPlayerDialog.vue'
 import NextforumFileInput from '@/components/generic/NextforumFileInput.vue'
 import UploadArquivosDialog from '@/components/arquivos/UploadArquivosDialog.vue'
 import { useArquivoService } from '@/services/api/arquivo.service'
@@ -260,6 +268,11 @@ const filesToUpload = ref<File[]>([])
 const pdfDialog = ref(false)
 const pdfLoading = ref(false)
 const pdfData = ref<ArrayBuffer | null>(null)
+
+const videoDialog = ref(false)
+const videoLoading = ref(false)
+const videoUrl = ref<string | null>(null)
+
 const selectedArquivo = ref<Arquivo | null>(null)
 
 const pastaId = computed(() => route.params.id as string)
@@ -328,6 +341,7 @@ const tiposPermitidos = [
   'application/vnd.ms-excel',
   'text/csv',
   'text/plain',
+  'video/mp4',
 ]
 
 function onFilesSelected(files: File[]) {
@@ -353,6 +367,7 @@ async function onRowClick(row: any) {
 
   const arquivo = row as Arquivo
   const isPdf = arquivo.nome.toLowerCase().endsWith('.pdf')
+  const isVideo = arquivo.nome.toLowerCase().endsWith('.mp4')
 
   if (isPdf) {
     selectedArquivo.value = arquivo
@@ -365,6 +380,21 @@ async function onRowClick(row: any) {
       console.error('Erro ao carregar PDF:', err)
     } finally {
       pdfLoading.value = false
+    }
+    return
+  }
+
+  if (isVideo) {
+    selectedArquivo.value = arquivo
+    videoUrl.value = null
+    videoDialog.value = true
+    videoLoading.value = true
+    try {
+      videoUrl.value = await arquivosService.getPresignedUrl(arquivo.id)
+    } catch (err) {
+      console.error('Erro ao carregar vídeo:', err)
+    } finally {
+      videoLoading.value = false
     }
     return
   }
