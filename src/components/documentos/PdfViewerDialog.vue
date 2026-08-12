@@ -241,11 +241,10 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import PdfViewer from './PdfViewer.vue'
-import type { Arquivo } from '@/types/arquivos/Arquivo'
 
 const props = defineProps<{
   modelValue: boolean
-  arquivo: Arquivo | null
+  arquivo: { nome: string } | null
   pdfData: ArrayBuffer | null
   loading: boolean
 }>()

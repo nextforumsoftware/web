@@ -97,9 +97,21 @@ const router = createRouter({
           meta: { requiresAuth: true },
         },
         {
-          path: 'jurisprudencia/rs',
-          name: 'jurisprudencia-rs',
-          component: () => import('@/pages/jurisprudencias/JurisprudenciasPage.vue'),
+          path: 'jurisprudencia/biblioteca',
+          name: 'jurisprudencia-biblioteca',
+          component: () => import('@/pages/jurisprudencias/BibliotecaJurisprudenciaPage.vue'),
+          meta: { requiresAuth: true},
+        },
+        {
+          path: 'jurisprudencia/biblioteca/novo',
+          name: 'jurisprudencia-form',
+          component: () => import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
+          meta: { requiresAuth: true},
+        },
+        {
+          path: 'jurisprudencia/biblioteca/:id',
+          name: 'jurisprudencia-view',
+          component: () => import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
           meta: { requiresAuth: true},
         },
         {

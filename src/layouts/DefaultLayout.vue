@@ -127,8 +127,8 @@ const menuItems = [
   { icon: 'task', label: 'Modelos de Petição', route: 'peticoes' },
   {
     icon: 'menu_book',
-    label: 'Jurisprudência TJRS',
-    route: 'jurisprudencia-rs',
+    label: 'Jurisprudência',
+    route: 'jurisprudencia-biblioteca',
   },
   { icon: 'timeline', label: 'Timeline', route: 'timelines' },
   { icon: 'settings', label: 'Configurações', route: 'configuracoes-usuarios' },
