@@ -216,20 +216,14 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuasar, type QForm } from 'quasar'
+import axios from 'axios'
 import { useNotification } from '@/composables/useNotification'
 import InputTextComponent from '@/components/InputTextComponent.vue'
 import SelectComponent from '@/components/SelectComponent.vue'
-import OpenAI from 'openai'
 import TextEditorComponent from '@/components/TextEditorComponent.vue'
 import type { PeticaoModelo } from '@/types/peticoes/PeticaoModelo'
 import { usePeticaoService } from '@/services/api/peticao.service'
 import { copiarConteudoFormatado } from '@/utils/copiarConteudo'
-
-const client = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  baseURL: 'https://api.openai.com/v1',
-  dangerouslyAllowBrowser: true,
-})
 
 const route = useRoute()
 const notification = useNotification()
@@ -351,61 +345,12 @@ async function enviar() {
   }, 4000)
 
   try {
-    const response = await client.chat.completions.create({
-      model: 'gpt-4.1',
-      messages: [
-        {
-          role: 'system',
-          content: `Você é um advogado especialista em direito brasileiro.
-
-          Sua tarefa é gerar um MODELO DE PETIÇÃO JURÍDICA.
-
-          IMPORTANTE:
-          - A resposta deve ser SOMENTE uma STRING em HTML.
-          - NÃO utilize markdown.
-          - NÃO utilize blocos de código.
-          - NÃO explique nada antes ou depois.
-          - Retorne apenas o HTML puro.
-
-          Regras de formatação:
-          - Utilize apenas HTML simples compatível com editores rich text.
-          - Use principalmente as seguintes tags:
-          <p>, <strong>, <em>, <h2>, <h3>, <ul>, <ol>, <li>, <br>
-
-          Estrutura obrigatória da petição:
-          1. Endereçamento
-          2. Qualificação das partes
-          3. Dos fatos
-          4. Do direito
-          5. Dos pedidos
-          6. Valor da causa
-          7. Fechamento (Termos em que pede deferimento)
-
-          Regras de estilo:
-          - Use parágrafos <p>
-          - Use <strong> para títulos importantes
-          - Use <h3> para seções
-          - Separe seções com espaçamento
-          - Linguagem jurídica formal brasileira
-
-          Tipo de petição:
-          ${formData.value.tipo}
-
-          Retorne um modelo completo com conteúdo realista.`,
-        },
-        {
-          role: 'user',
-          content: `Caso do cliente: ${prompt.value}`,
-        },
-      ],
-      response_format: { type: 'text' },
-    }, { signal: abortController!.signal })
-
-    formData.value.conteudo = response.choices[0]?.message?.content || ''
+    const tipoPeticao = formData.value.tipo!
+    formData.value.conteudo = await peticaoService.gerarComIA(tipoPeticao, prompt.value, abortController!.signal)
     notification.success('Petição gerada com sucesso!')
   } catch (erro: any) {
-    if (erro.name !== 'AbortError' && !abortController?.signal.aborted) {
-      notification.error('Erro ao gerar modelo: ' + (erro.message || 'Desconhecido'))
+    if (!axios.isCancel(erro)) {
+      notification.error('Erro ao gerar modelo: ' + (erro.response?.data?.message || erro.message || 'Desconhecido'))
     }
   } finally {
     loading.value = false
