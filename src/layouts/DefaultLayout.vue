@@ -7,8 +7,15 @@
       <q-toolbar style="height: 80px">
         <q-toolbar-title class="q-ml-lg text-bold"> NEXTFORUM </q-toolbar-title>
 
-        <div class="row items-center" style="gap: 12px;">
-          <span class="text-white" style="font-size: 14px; font-weight: 500;">{{ nameUserAuth }}</span>
+        <div
+          class="row items-center"
+          style="gap: 12px"
+        >
+          <span
+            class="text-white"
+            style="font-size: 14px; font-weight: 500"
+            >{{ nameUserAuth }}</span
+          >
 
           <q-btn
             flat
@@ -23,7 +30,7 @@
               :style="{ backgroundImage: `url(${fotoUsuario})` }"
             />
             <q-menu>
-              <q-list style="min-width: 170px;">
+              <q-list style="min-width: 170px">
                 <q-item
                   clickable
                   v-close-popup
@@ -123,6 +130,7 @@ const menuItems = [
   { icon: 'home', label: 'Home', route: 'home' },
   { icon: 'group', label: 'Clientes', route: 'clientes' },
   { icon: 'work', label: 'Processos', route: 'processos' },
+  { icon: 'event_available', label: 'Prazos', route: 'prazos' },
   { icon: 'folders', label: 'Documentos', route: 'pastas' },
   { icon: 'task', label: 'Modelos de Petição', route: 'peticoes' },
   {

@@ -61,16 +61,23 @@
               style="color: #616161"
             />
           </div>
-          <span class="deadlines-card__title"
-            >Processos com prazos mais próximos</span
-          >
+          <span class="deadlines-card__title">Próximos prazos</span>
+          <q-space />
+          <q-btn
+            flat
+            dense
+            no-caps
+            label="Ver todos"
+            color="primary"
+            :to="{ name: 'prazos' }"
+          />
         </div>
 
         <div
           v-if="proximosPrazos.length === 0"
           class="text-grey-6 q-pa-lg text-center"
         >
-          Nenhum processo com prazo registrado.
+          Nenhum prazo pendente registrado.
         </div>
 
         <q-table
@@ -101,31 +108,28 @@
             <q-td :props="props">
               <span
                 class="prazo-date"
-                :class="prazoClass(props.row.dataPrazo)"
+                :class="prazoUrgenciaClass(props.row.status, props.row.data)"
               >
-                {{ formatarData(props.row.dataPrazo) }}
+                {{ formatarData(props.row.data) }}
               </span>
               <span class="prazo-hint text-grey-6 q-ml-sm">
-                {{ prazoLabel(props.row.dataPrazo) }}
+                {{ prazoUrgenciaLabel(props.row.status, props.row.data) }}
               </span>
             </q-td>
           </template>
 
-          <template #body-cell-status="props">
+          <template #body-cell-processo="props">
             <q-td :props="props">
-              <span
-                class="status-label"
-                :class="`status-label--${props.row.status.toLowerCase()}`"
-              >
-                {{ formatStatus(props.row.status) }}
-              </span>
+              <span class="text-grey-8">{{
+                props.row.processo?.numeroProcesso ?? '-'
+              }}</span>
             </q-td>
           </template>
 
           <template #body-cell-tipo="props">
             <q-td :props="props">
               <span class="text-grey-8">{{
-                formatTipo(props.row.tipoAcaoProcesso)
+                prazoTipoLabel(props.row.tipo)
               }}</span>
             </q-td>
           </template>
@@ -139,15 +143,22 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { type QTableColumn } from 'quasar'
-import { useProcessoService } from '@/services'
-import { formatarData, parseSafeDate } from '@/utils/date'
+import { useProcessoService, usePrazoService } from '@/services'
+import type { Prazo } from '@/types/prazos/Prazo'
+import { formatarData } from '@/utils/date'
+import {
+  prazoTipoLabel,
+  prazoUrgenciaClass,
+  prazoUrgenciaLabel,
+} from '@/utils/prazo'
 
 const router = useRouter()
 const processoService = useProcessoService()
+const prazoService = usePrazoService()
 
 const isLoading = ref(true)
 const stats = ref<{ status: string; total: number }[]>([])
-const proximosPrazos = ref<any[]>([])
+const proximosPrazos = ref<Prazo[]>([])
 
 const statusOptions = [
   { label: 'Andamento', value: 'ANDAMENTO', color: '#003366', icon: 'gavel' },
@@ -167,16 +178,6 @@ const statusOptions = [
   { label: 'Arquivado', value: 'ARQUIVADO', color: '#757575', icon: 'archive' },
 ]
 
-const tipoOptions = [
-  { label: 'Cível', value: 'CIVEL' },
-  { label: 'Trabalhista', value: 'TRABALHISTA' },
-  { label: 'Criminal', value: 'CRIMINAL' },
-  { label: 'Tributário', value: 'TRIBUTARIO' },
-  { label: 'Família', value: 'FAMILIA' },
-  { label: 'Consumidor', value: 'CONSUMIDOR' },
-  { label: 'Outros', value: 'OUTROS' },
-]
-
 const statsCards = computed(() =>
   statusOptions.map((opt) => ({
     ...opt,
@@ -185,34 +186,20 @@ const statsCards = computed(() =>
 )
 
 const columns: QTableColumn[] = [
-  {
-    name: 'numeroProcesso',
-    field: 'numeroProcesso',
-    label: 'Número Processo',
-    align: 'left',
-  },
-  {
-    name: 'tipo',
-    field: 'tipoAcaoProcesso',
-    label: 'Tipo Ação',
-    align: 'left',
-  },
-  {
-    name: 'parteContraria',
-    field: 'parteContraria',
-    label: 'Parte Contrária',
-    align: 'left',
-    format: (val: string) => val || '-',
-  },
-  { name: 'status', field: 'status', label: 'Status', align: 'left' },
-  { name: 'prazo', field: 'dataPrazo', label: 'Prazo', align: 'left' },
+  { name: 'titulo', field: 'titulo', label: 'Prazo', align: 'left' },
+  { name: 'processo', field: 'processo', label: 'Processo', align: 'left' },
+  { name: 'tipo', field: 'tipo', label: 'Tipo', align: 'left' },
+  { name: 'prazo', field: 'data', label: 'Vencimento', align: 'left' },
 ]
 
 async function load() {
   try {
-    const data = await processoService.getDashboard()
-    stats.value = data.stats
-    proximosPrazos.value = data.proximosPrazos
+    const [dashboardProcessos, dashboardPrazos] = await Promise.all([
+      processoService.getDashboard(),
+      prazoService.getDashboard(),
+    ])
+    stats.value = dashboardProcessos.stats
+    proximosPrazos.value = dashboardPrazos.proximosPrazos
   } catch (error) {
     console.error(error)
   } finally {
@@ -220,42 +207,9 @@ async function load() {
   }
 }
 
-function irParaProcesso(processo: any) {
-  router.push({ name: 'processo-view', params: { id: processo.id } })
-}
-
-function diasRestantes(val: string): number {
-  const hoje = new Date()
-  hoje.setHours(0, 0, 0, 0)
-  const prazo = parseSafeDate(val)
-  prazo.setHours(0, 0, 0, 0)
-  return Math.round((prazo.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24))
-}
-
-function prazoClass(val: string): string {
-  if (!val) return 'prazo-date--ok'
-  const dias = diasRestantes(val)
-  if (dias < 0) return 'prazo-date--vencido'
-  if (dias <= 7) return 'prazo-date--urgente'
-  if (dias <= 15) return 'prazo-date--atencao'
-  return 'prazo-date--ok'
-}
-
-function prazoLabel(val: string): string {
-  if (!val) return ''
-  const dias = diasRestantes(val)
-  if (dias < 0) return `venceu há ${Math.abs(dias)} dia(s)`
-  if (dias === 0) return 'vence hoje'
-  if (dias === 1) return 'vence amanhã'
-  return `${dias} dias`
-}
-
-function formatStatus(val: string): string {
-  return statusOptions.find((option) => option.value === val)?.label ?? val
-}
-
-function formatTipo(val: string): string {
-  return tipoOptions.find((option) => option.value === val)?.label ?? val
+function irParaProcesso(prazo: Prazo) {
+  if (!prazo.processo) return
+  router.push({ name: 'processo-view', params: { id: prazo.processo.id } })
 }
 
 onMounted(() => load())
@@ -356,27 +310,5 @@ onMounted(() => load())
 
 .prazo-hint {
   font-size: 12px;
-}
-
-.status-label {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.status-label--andamento {
-  color: #003366;
-}
-.status-label--julgamento {
-  color: #c6a75e;
-}
-.status-label--sentenca {
-  color: #8b5e3c;
-}
-.status-label--recurso {
-  color: #c10015;
-  font-weight: 600;
-}
-.status-label--arquivado {
-  color: #757575;
 }
 </style>

@@ -84,17 +84,15 @@
           </div>
 
           <div class="col-12 col-sm-auto row items-center q-gutter-sm">
-            <div
-              v-if="processo?.dataPrazo"
-              class="prazo-badge"
-              :class="prazoClass(processo.dataPrazo)"
-            >
-              <q-icon
-                name="schedule"
-                size="14px"
-              />
-              <span>Prazo: {{ formatarData(processo.dataPrazo) }}</span>
-            </div>
+            <q-btn
+              flat
+              dense
+              no-caps
+              icon="event_available"
+              color="grey-7"
+              label="Prazos do processo"
+              :to="{ name: 'prazos', query: { processoId } }"
+            />
             <q-btn
               flat
               dense
@@ -353,7 +351,10 @@ import { useRoute } from 'vue-router'
 import { type QForm, type QTableColumn } from 'quasar'
 import { useProcessoService, useTimelineService } from '@/services'
 import { useNotification } from '@/composables/useNotification'
-import type { TimelineEvento, TipoEvento } from '@/types/timelines/TimelineEvento'
+import type {
+  TimelineEvento,
+  TipoEvento,
+} from '@/types/timelines/TimelineEvento'
 import InputDateComponent from '@/components/InputDateComponent.vue'
 import InputTextComponent from '@/components/InputTextComponent.vue'
 import SelectComponent from '@/components/SelectComponent.vue'
@@ -385,7 +386,12 @@ const eventos = ref<TimelineEvento[]>([])
 const editandoEvento = ref<TimelineEvento | null>(null)
 const eventoParaExcluir = ref<TimelineEvento | null>(null)
 
-const form = ref<EventoForm>({ titulo: '', tipo: 'OUTROS', data: '', descricao: '' })
+const form = ref<EventoForm>({
+  titulo: '',
+  tipo: 'OUTROS',
+  data: '',
+  descricao: '',
+})
 
 const eventosSorted = computed(() =>
   [...eventos.value].sort(
@@ -413,7 +419,9 @@ const tiposEvento = [
 ]
 
 function tipoLabel(tipo: string) {
-  return tiposEvento.find((tipoEvento) => tipoEvento.value === tipo)?.label ?? tipo
+  return (
+    tiposEvento.find((tipoEvento) => tipoEvento.value === tipo)?.label ?? tipo
+  )
 }
 
 function tipoColorHex(tipo: string) {
@@ -465,17 +473,6 @@ function instanciaLabel(instancia: string) {
   return map[instancia] ?? instancia
 }
 
-function prazoClass(dataPrazo: string) {
-  const hoje = new Date()
-  hoje.setHours(0, 0, 0, 0)
-  const prazo = new Date(dataPrazo.split('T')[0] + 'T12:00:00')
-  const dias = Math.round((prazo.getTime() - hoje.getTime()) / 86400000)
-  if (dias < 0) return 'prazo-vencido'
-  if (dias <= 7) return 'prazo-urgente'
-  if (dias <= 15) return 'prazo-atencao'
-  return 'prazo-ok'
-}
-
 function formVazio(): EventoForm {
   return { titulo: '', tipo: 'OUTROS', data: '', descricao: '' }
 }
@@ -518,7 +515,9 @@ async function salvarEvento() {
         editandoEvento.value.id,
         payload,
       )
-      const idx = eventos.value.findIndex((evento) => evento.id === atualizado.id)
+      const idx = eventos.value.findIndex(
+        (evento) => evento.id === atualizado.id,
+      )
       if (idx !== -1) eventos.value[idx] = atualizado
       notification.success('Evento atualizado!')
     } else {
@@ -622,29 +621,6 @@ onMounted(async () => {
 }
 .status-label--arquivado {
   color: #757575;
-}
-
-.prazo-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-.prazo-vencido,
-.prazo-urgente {
-  background: #ffeaea;
-  color: #c10015;
-}
-.prazo-atencao {
-  background: #fff8e1;
-  color: #c6a75e;
-}
-.prazo-ok {
-  background: #f0f4ff;
-  color: #003366;
 }
 
 .tipo-chip {

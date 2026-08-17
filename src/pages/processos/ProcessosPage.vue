@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-md">
-    <div class="flex justify-between items-center q-mb-sm" style="height: 80px;">
+    <div
+      class="flex justify-between items-center q-mb-sm"
+      style="height: 80px"
+    >
       <div class="flex column">
         <h4 class="text-terciary text-bold q-my-sm">Processos</h4>
         <p class="text-terciary q-my-none">Gerencie seus processos</p>
@@ -9,7 +12,7 @@
         color="secondary"
         icon="add_circle"
         label="Novo Processo"
-        style="max-width: 200px;"
+        style="max-width: 200px"
         :to="{ name: 'processo-form' }"
       />
     </div>
@@ -26,7 +29,10 @@
           clear-icon="close"
         >
           <template #prepend>
-            <q-icon name="search" size="18px" />
+            <q-icon
+              name="search"
+              size="18px"
+            />
           </template>
         </q-input>
       </div>
@@ -62,8 +68,14 @@
   </div>
 
   <div class="q-pa-md q-pt-none">
-    <div v-if="isLoading" class="column items-center q-gutter-y-md q-pa-xl">
-      <q-spinner-hourglass color="primary" size="4em" />
+    <div
+      v-if="isLoading"
+      class="column items-center q-gutter-y-md q-pa-xl"
+    >
+      <q-spinner-hourglass
+        color="primary"
+        size="4em"
+      />
       <span class="text-grey-8">Carregando processos...</span>
     </div>
 
@@ -97,13 +109,18 @@
 
         <template #body-cell-tipoAcaoProcesso="props">
           <q-td :props="props">
-            <span class="text-weight-medium text-grey-9">{{ formatTipoProcesso(props.row.tipoAcaoProcesso) }}</span>
+            <span class="text-weight-medium text-grey-9">{{
+              formatTipoProcesso(props.row.tipoAcaoProcesso)
+            }}</span>
           </q-td>
         </template>
 
         <template #body-cell-status="props">
           <q-td :props="props">
-            <q-badge :color="statusColor(props.row.status)" :label="formatStatus(props.row.status)" />
+            <q-badge
+              :color="statusColor(props.row.status)"
+              :label="formatStatus(props.row.status)"
+            />
           </q-td>
         </template>
 
@@ -116,7 +133,10 @@
 
       <template #loading>
         <div class="row justify-center q-my-md">
-          <q-spinner-dots color="primary" size="40px" />
+          <q-spinner-dots
+            color="primary"
+            size="40px"
+          />
         </div>
       </template>
     </q-infinite-scroll>
@@ -146,34 +166,38 @@ const filters = reactive({
 })
 
 const statusOptions = [
-  { label: 'Andamento',   value: 'ANDAMENTO' },
-  { label: 'Julgamento',  value: 'JULGAMENTO' },
-  { label: 'Sentença',    value: 'SENTENCA' },
-  { label: 'Recurso',     value: 'RECURSO' },
-  { label: 'Arquivado',   value: 'ARQUIVADO' },
+  { label: 'Andamento', value: 'ANDAMENTO' },
+  { label: 'Julgamento', value: 'JULGAMENTO' },
+  { label: 'Sentença', value: 'SENTENCA' },
+  { label: 'Recurso', value: 'RECURSO' },
+  { label: 'Arquivado', value: 'ARQUIVADO' },
 ]
 
 const tipoAcaoOptions = [
-  { label: 'Cível',       value: 'CIVEL' },
+  { label: 'Cível', value: 'CIVEL' },
   { label: 'Trabalhista', value: 'TRABALHISTA' },
-  { label: 'Criminal',    value: 'CRIMINAL' },
-  { label: 'Tributário',  value: 'TRIBUTARIO' },
-  { label: 'Família',     value: 'FAMILIA' },
-  { label: 'Consumidor',  value: 'CONSUMIDOR' },
-  { label: 'Outros',      value: 'OUTROS' },
+  { label: 'Criminal', value: 'CRIMINAL' },
+  { label: 'Tributário', value: 'TRIBUTARIO' },
+  { label: 'Família', value: 'FAMILIA' },
+  { label: 'Consumidor', value: 'CONSUMIDOR' },
+  { label: 'Outros', value: 'OUTROS' },
 ]
 
 const columns: QTableColumn[] = [
-  { name: 'numeroProcesso', field: 'numeroProcesso', label: 'Número Processo', align: 'left', sortable: true },
-  { name: 'tipoAcaoProcesso', field: 'tipoAcaoProcesso', label: 'Tipo Ação', align: 'left' },
-  { name: 'status', field: 'status', label: 'Status', align: 'left' },
   {
-    name: 'dataPrazo',
-    field: 'dataPrazo',
-    label: 'Prazo',
+    name: 'numeroProcesso',
+    field: 'numeroProcesso',
+    label: 'Número Processo',
     align: 'left',
-    format: (val: string) => val ? val.split('-').reverse().join('/') : '-',
+    sortable: true,
   },
+  {
+    name: 'tipoAcaoProcesso',
+    field: 'tipoAcaoProcesso',
+    label: 'Tipo Ação',
+    align: 'left',
+  },
+  { name: 'status', field: 'status', label: 'Status', align: 'left' },
 ]
 
 async function load() {
@@ -222,7 +246,9 @@ function activeFilters() {
   return {
     ...(filters.term?.trim() && { term: filters.term.trim() }),
     ...(filters.status && { status: filters.status }),
-    ...(filters.tipoAcaoProcesso && { tipoAcaoProcesso: filters.tipoAcaoProcesso }),
+    ...(filters.tipoAcaoProcesso && {
+      tipoAcaoProcesso: filters.tipoAcaoProcesso,
+    }),
   }
 }
 
@@ -238,20 +264,20 @@ function onEditarProcesso(processo: Processo | null) {
 }
 
 function formatTipoProcesso(val: string) {
-  return tipoAcaoOptions.find(o => o.value === val)?.label ?? val
+  return tipoAcaoOptions.find((o) => o.value === val)?.label ?? val
 }
 
 function formatStatus(val: string) {
-  return statusOptions.find(o => o.value === val)?.label ?? val
+  return statusOptions.find((o) => o.value === val)?.label ?? val
 }
 
 function statusColor(val: string) {
   const map: Record<string, string> = {
-    ANDAMENTO:  'primary',
+    ANDAMENTO: 'primary',
     JULGAMENTO: 'secondary',
-    SENTENCA:   'accent',
-    RECURSO:    'negative',
-    ARQUIVADO:  'grey-6',
+    SENTENCA: 'accent',
+    RECURSO: 'negative',
+    ARQUIVADO: 'grey-6',
   }
   return map[val] ?? 'grey-6'
 }

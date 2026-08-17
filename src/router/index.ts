@@ -12,9 +12,9 @@ const router = createRouter({
         {
           path: '',
           name: 'login',
-          component: () => import('@/pages/auth/LoginPage.vue')
-        }
-      ]
+          component: () => import('@/pages/auth/LoginPage.vue'),
+        },
+      ],
     },
     {
       path: '/app',
@@ -39,13 +39,21 @@ const router = createRouter({
         {
           path: 'processos/:id',
           name: 'processo-view',
-          component: () => import('@/pages/processos/ProcessoCadastroEdicao.vue'),
+          component: () =>
+            import('@/pages/processos/ProcessoCadastroEdicao.vue'),
           meta: { requiresAuth: true },
         },
         {
           path: 'processos/novo',
           name: 'processo-form',
-          component: () => import('@/pages/processos/ProcessoCadastroEdicao.vue'),
+          component: () =>
+            import('@/pages/processos/ProcessoCadastroEdicao.vue'),
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'prazos',
+          name: 'prazos',
+          component: () => import('@/pages/prazos/PrazosPage.vue'),
           meta: { requiresAuth: true },
         },
         {
@@ -99,26 +107,29 @@ const router = createRouter({
         {
           path: 'jurisprudencia/biblioteca',
           name: 'jurisprudencia-biblioteca',
-          component: () => import('@/pages/jurisprudencias/BibliotecaJurisprudenciaPage.vue'),
-          meta: { requiresAuth: true},
+          component: () =>
+            import('@/pages/jurisprudencias/BibliotecaJurisprudenciaPage.vue'),
+          meta: { requiresAuth: true },
         },
         {
           path: 'jurisprudencia/biblioteca/novo',
           name: 'jurisprudencia-form',
-          component: () => import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
-          meta: { requiresAuth: true},
+          component: () =>
+            import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
+          meta: { requiresAuth: true },
         },
         {
           path: 'jurisprudencia/biblioteca/:id',
           name: 'jurisprudencia-view',
-          component: () => import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
-          meta: { requiresAuth: true},
+          component: () =>
+            import('@/pages/jurisprudencias/JurisprudenciaCadastroEdicao.vue'),
+          meta: { requiresAuth: true },
         },
         {
           path: 'timelines',
           name: 'timelines',
           component: () => import('@/pages/timelines/TimelinesPage.vue'),
-          meta: { requiresAuth: true},
+          meta: { requiresAuth: true },
         },
         {
           path: 'timelines/:processoId',
@@ -135,21 +146,24 @@ const router = createRouter({
         {
           path: 'configuracoes/usuarios',
           name: 'configuracoes-usuarios',
-          component: () => import('@/pages/configuracoes/usuarios/UsuariosPage.vue'),
+          component: () =>
+            import('@/pages/configuracoes/usuarios/UsuariosPage.vue'),
           meta: { requiresAuth: true },
         },
         {
           path: 'configuracoes/usuarios/novo',
           name: 'configuracoes-usuarios-novo',
-          component: () => import('@/pages/configuracoes/usuarios/UsuarioCadastroEdicao.vue'),
+          component: () =>
+            import('@/pages/configuracoes/usuarios/UsuarioCadastroEdicao.vue'),
           meta: { requiresAuth: true },
         },
         {
           path: 'configuracoes/usuarios/:id',
           name: 'configuracoes-usuarios-editar',
-          component: () => import('@/pages/configuracoes/usuarios/UsuarioCadastroEdicao.vue'),
+          component: () =>
+            import('@/pages/configuracoes/usuarios/UsuarioCadastroEdicao.vue'),
           meta: { requiresAuth: true },
-        }
+        },
       ],
     },
     {

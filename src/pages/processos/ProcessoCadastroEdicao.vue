@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-md">
-    <div class="flex justify-between items-center q-mb-sm" style="height: 80px;">
+    <div
+      class="flex justify-between items-center q-mb-sm"
+      style="height: 80px"
+    >
       <div class="flex column">
         <h4 class="text-terciary text-bold q-my-sm">
           {{ editMode ? 'Editar Processo' : 'Novo Processo' }}
@@ -8,159 +11,194 @@
       </div>
     </div>
 
-    <div class="bg-white q-pa-lg" style="border: 0.4px solid gray;">
-      <q-form ref="formRef" @submit.prevent="handleSubmit">
-        <div class="row q-col-gutter-md">
+    <q-tabs
+      v-if="editMode"
+      v-model="tab"
+      dense
+      align="left"
+      active-color="primary"
+      class="text-grey q-mb-md"
+    >
+      <q-tab
+        name="informacoes"
+        label="Informações"
+        no-caps
+      />
+      <q-tab
+        name="prazos"
+        label="Prazos"
+        no-caps
+      />
+    </q-tabs>
 
-          <div class="col-6">
-            <InputTextComponent
-              v-model="formData.numeroProcesso"
-              label="Número do Processo"
-              dense
-              outlined
-              :rules="[val => requiredField(val, 'Número do Processo')]"
-            />
-          </div>
+    <q-tab-panels
+      v-model="tab"
+      animated
+      keep-alive
+    >
+      <q-tab-panel
+        name="informacoes"
+        class="q-pa-none"
+      >
+        <div
+          class="bg-white q-pa-lg"
+          style="border: 0.4px solid gray"
+        >
+          <q-form
+            ref="formRef"
+            @submit.prevent="handleSubmit"
+          >
+            <div class="row q-col-gutter-md">
+              <div class="col-6">
+                <InputTextComponent
+                  v-model="formData.numeroProcesso"
+                  label="Número do Processo"
+                  dense
+                  outlined
+                  :rules="[(val) => requiredField(val, 'Número do Processo')]"
+                />
+              </div>
 
-          <div class="col-6">
-            <SelectComponent
-              v-model="formData.clienteId"
-              label="Cliente*"
-              :options="clientes"
-              option-value="id"
-              option-label="nome"
-              :rules="[val => requiredField(val, 'Cliente')]"
-            />
-          </div>
+              <div class="col-6">
+                <SelectComponent
+                  v-model="formData.clienteId"
+                  label="Cliente*"
+                  :options="clientes"
+                  option-value="id"
+                  option-label="nome"
+                  :rules="[(val) => requiredField(val, 'Cliente')]"
+                />
+              </div>
 
-          <div class="col-6">
-            <InputTextComponent
-              v-model="formData.parteContraria"
-              label="Parte Contrária"
-              dense
-              outlined
-            />
-          </div>
+              <div class="col-6">
+                <InputTextComponent
+                  v-model="formData.parteContraria"
+                  label="Parte Contrária"
+                  dense
+                  outlined
+                />
+              </div>
 
-          <div class="col-6">
-            <SelectComponent
-              v-model="formData.tipoAcaoProcesso"
-              label="Tipo de Ação*"
-              :options="tipoAcao"
-              option-value="value"
-              option-label="title"
-              :rules="[val => requiredField(val, 'Tipo de Ação')]"
-            />
-          </div>
+              <div class="col-6">
+                <SelectComponent
+                  v-model="formData.tipoAcaoProcesso"
+                  label="Tipo de Ação*"
+                  :options="tipoAcao"
+                  option-value="value"
+                  option-label="title"
+                  :rules="[(val) => requiredField(val, 'Tipo de Ação')]"
+                />
+              </div>
 
-          <div class="col-6">
-            <SelectComponent
-              v-model="formData.status"
-              label="Status*"
-              :options="status"
-              option-value="value"
-              option-label="title"
-              :rules="[val => requiredField(val, 'Status')]"
-            />
-          </div>
+              <div class="col-6">
+                <SelectComponent
+                  v-model="formData.status"
+                  label="Status*"
+                  :options="status"
+                  option-value="value"
+                  option-label="title"
+                  :rules="[(val) => requiredField(val, 'Status')]"
+                />
+              </div>
 
-          <div class="col-6">
-            <SelectComponent
-              v-model="formData.instancia"
-              label="Instância"
-              :options="instancias"
-              option-value="value"
-              option-label="title"
-            />
-          </div>
+              <div class="col-6">
+                <SelectComponent
+                  v-model="formData.instancia"
+                  label="Instância"
+                  :options="instancias"
+                  option-value="value"
+                  option-label="title"
+                />
+              </div>
 
-          <div class="col-4">
-            <InputTextComponent
-              v-model="formData.comarca"
-              label="Comarca"
-              dense
-              outlined
-            />
-          </div>
+              <div class="col-4">
+                <InputTextComponent
+                  v-model="formData.comarca"
+                  label="Comarca"
+                  dense
+                  outlined
+                />
+              </div>
 
-          <div class="col-4">
-            <InputTextComponent
-              v-model="formData.vara"
-              label="Vara"
-              dense
-              outlined
-            />
-          </div>
+              <div class="col-4">
+                <InputTextComponent
+                  v-model="formData.vara"
+                  label="Vara"
+                  dense
+                  outlined
+                />
+              </div>
 
-          <div class="col-4">
-            <SelectComponent
-              v-model="formData.esferaProcesso"
-              label="Esfera*"
-              :options="esferasProcesso"
-              option-value="value"
-              option-label="title"
-              :rules="[val => requiredField(val, 'Esfera')]"
-            />
-          </div>
+              <div class="col-4">
+                <SelectComponent
+                  v-model="formData.esferaProcesso"
+                  label="Esfera*"
+                  :options="esferasProcesso"
+                  option-value="value"
+                  option-label="title"
+                  :rules="[(val) => requiredField(val, 'Esfera')]"
+                />
+              </div>
 
-          <div class="col-4">
-            <InputDateComponent
-              v-model="formData.dataDistribuicao"
-              label="Data de Distribuição"
-              dense
-              outlined
-            />
-          </div>
+              <div class="col-6">
+                <InputDateComponent
+                  v-model="formData.dataDistribuicao"
+                  label="Data de Distribuição"
+                  dense
+                  outlined
+                />
+              </div>
 
-          <div class="col-4">
-            <InputDateComponent
-              v-model="formData.dataPrazo"
-              label="Data de Prazo"
-              dense
-              outlined
-            />
-          </div>
+              <div class="col-6">
+                <InputMoneyComponent
+                  v-model="formData.valorCausa"
+                  label="Valor da Causa"
+                  dense
+                  outlined
+                />
+              </div>
 
-          <div class="col-4">
-            <InputMoneyComponent
-              v-model="formData.valorCausa"
-              label="Valor da Causa"
-              dense
-              outlined
-            />
-          </div>
+              <q-input
+                v-model="formData.descricao"
+                label="Descreva o caso ou situação jurídica"
+                type="textarea"
+                rows="4"
+                outlined
+                dense
+                class="q-mb-md col"
+              />
+            </div>
 
-          <q-input
-            v-model="formData.descricao"
-            label="Descreva o caso ou situação jurídica"
-            type="textarea"
-            rows="4"
-            outlined dense
-            class="q-mb-md col"
-          />
+            <div class="row justify-end q-mt-lg">
+              <q-btn
+                color="primary"
+                size="small"
+                :label="'Cancelar'"
+                class="q-mr-sm"
+                flat
+                :to="{ name: 'processos' }"
+              />
+
+              <q-btn
+                color="green"
+                size="small"
+                :label="editMode ? 'Atualizar' : 'Cadastrar'"
+                type="submit"
+                :loading="isLoading"
+              />
+            </div>
+          </q-form>
         </div>
+      </q-tab-panel>
 
-        <div class="row justify-end q-mt-lg">
-          <q-btn
-            color="primary"
-            size="small"
-            :label="'Cancelar'"
-            class="q-mr-sm"
-            flat
-            :to="{name: 'processos'}"
-          />
-
-          <q-btn
-            color="green"
-            size="small"
-            :label="editMode ? 'Atualizar' : 'Cadastrar'"
-            type="submit"
-            :loading="isLoading"
-          />
-        </div>
-      </q-form>
-    </div>
-
+      <q-tab-panel
+        v-if="editMode"
+        name="prazos"
+        class="q-pa-none"
+      >
+        <ProcessoPrazosTab :processo-id="idProcesso!" />
+      </q-tab-panel>
+    </q-tab-panels>
   </div>
 </template>
 
@@ -173,6 +211,7 @@ import InputDateComponent from '@/components/InputDateComponent.vue'
 import InputMoneyComponent from '@/components/InputMoneyComponent.vue'
 import InputTextComponent from '@/components/InputTextComponent.vue'
 import SelectComponent from '@/components/SelectComponent.vue'
+import ProcessoPrazosTab from '@/components/prazos/ProcessoPrazosTab.vue'
 import type { Cliente } from '@/types/clientes/Cliente'
 import { useClienteService, useProcessoService } from '@/services'
 import { isoToBr, brToIso } from '@/utils/date'
@@ -184,6 +223,7 @@ const processoService = useProcessoService()
 const clienteService = useClienteService()
 const notification = useNotification()
 
+const tab = ref('informacoes')
 const editMode = ref(false)
 const idProcesso = ref<string>()
 const clientes = ref<Cliente[]>([])
@@ -202,9 +242,8 @@ const formData = ref({
   vara: '',
   comarca: '',
   dataDistribuicao: null as string | null,
-  dataPrazo: null as string | null,
   valorCausa: null as number | null,
-  descricao: null as string | null
+  descricao: null as string | null,
 })
 
 const status = [
@@ -212,7 +251,7 @@ const status = [
   { title: 'Julgamento', value: 'JULGAMENTO' },
   { title: 'Sentença', value: 'SENTENCA' },
   { title: 'Recurso', value: 'RECURSO' },
-  { title: 'Arquivado', value: 'ARQUIVADO' }
+  { title: 'Arquivado', value: 'ARQUIVADO' },
 ]
 
 const instancias = [
@@ -230,12 +269,12 @@ const tipoAcao = [
   { title: 'Tributário', value: 'TRIBUTARIO' },
   { title: 'Família', value: 'FAMILIA' },
   { title: 'Consumidor', value: 'CONSUMIDOR' },
-  { title: 'Outros', value: 'OUTROS' }
+  { title: 'Outros', value: 'OUTROS' },
 ]
 
 const esferasProcesso = [
-  {title: 'Administrativo', value: 'ADMINISTRATIVO'},
-  {title: 'Judicial', value: 'JUDICIAL'}
+  { title: 'Administrativo', value: 'ADMINISTRATIVO' },
+  { title: 'Judicial', value: 'JUDICIAL' },
 ]
 
 function requiredField(val: any, fieldName = 'Campo'): boolean | string {
@@ -254,7 +293,6 @@ onMounted(async () => {
     formData.value = {
       ...response,
       dataDistribuicao: isoToBr(response.dataDistribuicao),
-      dataPrazo: isoToBr(response.dataPrazo)
     }
   }
 
@@ -288,14 +326,19 @@ async function createProcesso() {
     await processoService.create({
       ...formData.value,
       valorCausa: Number(formData.value.valorCausa),
-      dataDistribuicao: formData.value.dataDistribuicao ? brToIso(formData.value.dataDistribuicao) : null,
-      dataPrazo: formData.value.dataPrazo ? brToIso(formData.value.dataPrazo) : null
+      dataDistribuicao: formData.value.dataDistribuicao
+        ? brToIso(formData.value.dataDistribuicao)
+        : null,
     })
     notification.success('Processo cadastrado com sucesso!')
     router.push({ name: 'processos' })
   } catch (error: any) {
     if (error.response) {
-      notification.error('Não foi possível realizar o cadastro. Erro: ' + getApiErrorMessage(error), 9000)
+      notification.error(
+        'Não foi possível realizar o cadastro. Erro: ' +
+          getApiErrorMessage(error),
+        9000,
+      )
       console.error('ERRO', error.data)
     }
   }
@@ -308,13 +351,18 @@ async function updateProcesso() {
     await processoService.update(idProcesso.value, {
       ...formData.value,
       valorCausa: Number(formData.value.valorCausa),
-      dataDistribuicao: formData.value.dataDistribuicao ? brToIso(formData.value.dataDistribuicao) : null,
-      dataPrazo: formData.value.dataPrazo ? brToIso(formData.value.dataPrazo) : null
+      dataDistribuicao: formData.value.dataDistribuicao
+        ? brToIso(formData.value.dataDistribuicao)
+        : null,
     })
     notification.success('Processo atualizado com sucesso!')
   } catch (error: any) {
     if (error.response) {
-      notification.error('Não foi possível realizar a atualização. Erro: ' + getApiErrorMessage(error), 9000)
+      notification.error(
+        'Não foi possível realizar a atualização. Erro: ' +
+          getApiErrorMessage(error),
+        9000,
+      )
       console.error('ERRO', error.data)
     }
   }
