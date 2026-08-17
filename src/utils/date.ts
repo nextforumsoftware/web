@@ -17,7 +17,9 @@ export function brToIso(date: string): string {
 
 export function formatarDatetime(date: string): string {
   if (!date) return ''
-  return new Date(date).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })
+  return new Date(date).toLocaleDateString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+  })
 }
 
 export function formatarData(date: string): string {

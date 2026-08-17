@@ -3,41 +3,47 @@
     <p class="text-terciary text-bold q-mb-xs">
       {{ label }}
     </p>
-  </div>
 
-  <q-input
-    :dense="dense"
-    :outlined="outlined"
-    v-model="model"
-    mask="##/##/####"
-  >
-    <template v-slot:append>
-      <q-icon
-        name="event"
-        class="cursor-pointer"
-      >
-        <q-popup-proxy
-          cover
-          transition-show="scale"
-          transition-hide="scale"
+    <q-input
+      :dense="dense"
+      :outlined="outlined"
+      v-model="model"
+      class="full-width"
+      mask="##/##/####"
+      :rules="rules"
+      :hint="hint"
+      hide-bottom-space
+    >
+      <template v-slot:append>
+        <q-icon
+          name="event"
+          class="cursor-pointer"
         >
-          <q-date
-            v-model="model"
-            mask="DD/MM/YYYY"
+          <q-popup-proxy
+            cover
+            transition-show="scale"
+            transition-hide="scale"
           >
-            <div class="row items-center justify-end">
-              <q-btn
-                v-close-popup
-                label="Fechar"
-                color="red"
-                flat
-              />
-            </div>
-          </q-date>
-        </q-popup-proxy>
-      </q-icon>
-    </template>
-  </q-input>
+            <q-date
+              v-model="model"
+              mask="DD/MM/YYYY"
+              style="min-width: 320px"
+              today-btn
+            >
+              <div class="row items-center justify-end q-gutter-x-sm">
+                <q-btn
+                  v-close-popup
+                  label="Fechar"
+                  color="red"
+                  flat
+                />
+              </div>
+            </q-date>
+          </q-popup-proxy>
+        </q-icon>
+      </template>
+    </q-input>
+  </div>
 </template>
 
 <script setup lang="ts">
