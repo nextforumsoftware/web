@@ -35,6 +35,14 @@ export function formatarDataAbreviada(date: string): string {
     year: 'numeric',
   })
 }
+export function formatarDataAbreviadaCurta(date: string): string {
+  if (!date) return ''
+  return parseSafeDate(date).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
 
 export function formatarDataLonga(date: string): string {
   if (!date) return ''
@@ -50,5 +58,17 @@ export function formatarMesAno(date: string): string {
   return parseSafeDate(date).toLocaleDateString('pt-BR', {
     month: 'long',
     year: 'numeric',
+  })
+}
+
+export function formatarDataHora(date: string): string {
+  if (!date) return ''
+  return new Date(date).toLocaleString('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   })
 }
