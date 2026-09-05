@@ -124,6 +124,38 @@
           </q-td>
         </template>
 
+        <template #body-cell-acoes="props">
+          <q-td
+            :props="props"
+            auto-width
+          >
+            <div class="row no-wrap gap-xs justify-end">
+              <q-btn
+                flat
+                round
+                dense
+                size="sm"
+                icon="gavel"
+                color="primary"
+                @click.stop="onVerMovimentacoes(props.row)"
+              >
+                <q-tooltip>Movimentações</q-tooltip>
+              </q-btn>
+              <q-btn
+                flat
+                round
+                dense
+                size="sm"
+                icon="edit"
+                color="grey-6"
+                @click.stop="onEditarProcesso(props.row)"
+              >
+                <q-tooltip>Editar</q-tooltip>
+              </q-btn>
+            </div>
+          </q-td>
+        </template>
+
         <template #no-data>
           <div class="full-width flex flex-center q-pa-md text-grey-6">
             Nenhum processo encontrado.
@@ -198,6 +230,7 @@ const columns: QTableColumn[] = [
     align: 'left',
   },
   { name: 'status', field: 'status', label: 'Status', align: 'left' },
+  { name: 'acoes', field: 'id', label: '', align: 'right' },
 ]
 
 async function load() {
@@ -261,6 +294,14 @@ onMounted(() => {
 function onEditarProcesso(processo: Processo | null) {
   if (!processo) return
   router.push({ name: 'processo-view', params: { id: processo.id } })
+}
+
+function onVerMovimentacoes(processo: Processo) {
+  router.push({
+    name: 'processo-view',
+    params: { id: processo.id },
+    query: { tab: 'movimentacoes' },
+  })
 }
 
 function formatTipoProcesso(val: string) {

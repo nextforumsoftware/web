@@ -29,6 +29,11 @@
         label="Prazos"
         no-caps
       />
+      <q-tab
+        name="movimentacoes"
+        label="Movimentações"
+        no-caps
+      />
     </q-tabs>
 
     <q-tab-panels
@@ -198,6 +203,14 @@
       >
         <ProcessoPrazosTab :processo-id="idProcesso!" />
       </q-tab-panel>
+
+      <q-tab-panel
+        v-if="editMode"
+        name="movimentacoes"
+        class="q-pa-none"
+      >
+        <ProcessoMovimentosTab :processo-id="idProcesso!" />
+      </q-tab-panel>
     </q-tab-panels>
   </div>
 </template>
@@ -212,6 +225,7 @@ import InputMoneyComponent from '@/components/InputMoneyComponent.vue'
 import InputTextComponent from '@/components/InputTextComponent.vue'
 import SelectComponent from '@/components/SelectComponent.vue'
 import ProcessoPrazosTab from '@/components/prazos/ProcessoPrazosTab.vue'
+import ProcessoMovimentosTab from '@/components/processos/ProcessoMovimentosTab.vue'
 import type { Cliente } from '@/types/clientes/Cliente'
 import { useClienteService, useProcessoService } from '@/services'
 import { isoToBr, brToIso } from '@/utils/date'
@@ -223,7 +237,16 @@ const processoService = useProcessoService()
 const clienteService = useClienteService()
 const notification = useNotification()
 
-const tab = ref('informacoes')
+const ABAS = ['informacoes', 'prazos', 'movimentacoes']
+
+function abaInicial(): string {
+  if (!route.params.id) return 'informacoes'
+
+  const solicitada = String(route.query.tab ?? '')
+  return ABAS.includes(solicitada) ? solicitada : 'informacoes'
+}
+
+const tab = ref(abaInicial())
 const editMode = ref(false)
 const idProcesso = ref<string>()
 const clientes = ref<Cliente[]>([])

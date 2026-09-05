@@ -15,7 +15,15 @@ export interface TimelineEvento {
   descricao?: string
   tipo: TipoEvento
   data: string
+  movimentoId?: string | null
   createdAt: string
+}
+
+export interface EventoSugerido {
+  titulo: string
+  tipo: TipoEvento
+  data: string
+  movimentoId: string
 }
 
 export interface TimelineResumo {

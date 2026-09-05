@@ -1,5 +1,6 @@
 export { useClienteService } from './api/cliente.service'
 export { useProcessoService } from './api/processo.service'
+export { useMovimentoService } from './api/movimento.service'
 export { useTimelineService } from './api/timeline.service'
 export { useUsuarioService } from './api/usuario.service'
 export { useJurisprudenciaService } from './api/jurisprudencia.service'

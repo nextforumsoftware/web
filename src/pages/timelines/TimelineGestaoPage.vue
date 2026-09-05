@@ -148,11 +148,11 @@
             <span
               class="tipo-chip"
               :style="{
-                background: tipoColorHex(props.row.tipo) + '18',
-                color: tipoColorHex(props.row.tipo),
+                background: tipoEventoColorHex(props.row.tipo) + '18',
+                color: tipoEventoColorHex(props.row.tipo),
               }"
             >
-              {{ tipoLabel(props.row.tipo) }}
+              {{ tipoEventoLabel(props.row.tipo) }}
             </span>
           </q-td>
         </template>
@@ -228,93 +228,12 @@
     </template>
   </div>
 
-  <q-dialog
+  <EventoFormDialog
     v-model="dialogAberto"
-    persistent
-  >
-    <q-card style="min-width: 500px; max-width: 95vw">
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">
-          {{ editandoEvento ? 'Editar Evento' : 'Novo Evento' }}
-        </div>
-        <q-space />
-        <q-btn
-          icon="close"
-          flat
-          round
-          dense
-          v-close-popup
-        />
-      </q-card-section>
-
-      <q-card-section>
-        <q-form
-          ref="formRef"
-          @submit.prevent="salvarEvento"
-        >
-          <div class="row q-col-gutter-md">
-            <div class="col-12">
-              <InputTextComponent
-                v-model="form.titulo"
-                label="Título *"
-                outlined
-                dense
-                :rules="[(value) => !!value || 'Título é obrigatório']"
-              />
-            </div>
-
-            <div class="col-6">
-              <SelectComponent
-                v-model="form.tipo"
-                label="Tipo *"
-                :options="tiposEvento"
-                option-value="value"
-                option-label="label"
-                :rules="[(value) => !!value || 'Tipo é obrigatório']"
-              />
-            </div>
-
-            <div class="col-6">
-              <InputDateComponent
-                v-model="form.data"
-                label="Data *"
-                outlined
-                dense
-                :rules="[(value) => !!value || 'Data é obrigatória']"
-              />
-            </div>
-
-            <div class="col-12">
-              <InputTextComponent
-                v-model="form.descricao"
-                label="Comentário / Andamento"
-                type="textarea"
-                outlined
-                dense
-              />
-            </div>
-          </div>
-
-          <div class="row justify-end q-mt-md q-gutter-sm">
-            <q-btn
-              flat
-              no-caps
-              label="Cancelar"
-              v-close-popup
-            />
-            <q-btn
-              unelevated
-              color="primary"
-              no-caps
-              :label="editandoEvento ? 'Atualizar' : 'Salvar'"
-              type="submit"
-              :loading="salvando"
-            />
-          </div>
-        </q-form>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
+    :processo-id="processoId"
+    :evento="editandoEvento"
+    @saved="onSalvo"
+  />
 
   <q-dialog v-model="dialogExclusao">
     <q-card style="min-width: 340px">
@@ -348,24 +267,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { type QForm, type QTableColumn } from 'quasar'
+import { type QTableColumn } from 'quasar'
 import { useProcessoService, useTimelineService } from '@/services'
 import { useNotification } from '@/composables/useNotification'
-import type {
-  TimelineEvento,
-  TipoEvento,
-} from '@/types/timelines/TimelineEvento'
-import InputDateComponent from '@/components/InputDateComponent.vue'
-import InputTextComponent from '@/components/InputTextComponent.vue'
-import SelectComponent from '@/components/SelectComponent.vue'
-import { formatarData, isoToBr, brToIso } from '@/utils/date'
-
-type EventoForm = {
-  titulo: string
-  tipo: TipoEvento
-  data: string
-  descricao: string
-}
+import type { TimelineEvento } from '@/types/timelines/TimelineEvento'
+import EventoFormDialog from '@/components/timelines/EventoFormDialog.vue'
+import { tipoEventoColorHex, tipoEventoLabel } from '@/utils/timeline'
+import { formatarData } from '@/utils/date'
 
 const route = useRoute()
 const processoService = useProcessoService()
@@ -375,23 +283,14 @@ const notification = useNotification()
 const processoId = route.params.processoId as string
 
 const loading = ref(false)
-const salvando = ref(false)
 const excluindo = ref(false)
 const dialogAberto = ref(false)
 const dialogExclusao = ref(false)
-const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
 const processo = ref<any>(null)
 const eventos = ref<TimelineEvento[]>([])
 const editandoEvento = ref<TimelineEvento | null>(null)
 const eventoParaExcluir = ref<TimelineEvento | null>(null)
-
-const form = ref<EventoForm>({
-  titulo: '',
-  tipo: 'OUTROS',
-  data: '',
-  descricao: '',
-})
 
 const eventosSorted = computed(() =>
   [...eventos.value].sort(
@@ -406,37 +305,6 @@ const columns: QTableColumn[] = [
   { name: 'titulo', field: 'titulo', label: 'Evento', align: 'left' },
   { name: 'acoes', field: 'id', label: '', align: 'right' },
 ]
-
-const tiposEvento = [
-  { label: 'Audiência', value: 'AUDIENCIA' },
-  { label: 'Sentença', value: 'SENTENCA' },
-  { label: 'Recurso', value: 'RECURSO' },
-  { label: 'Despacho', value: 'DESPACHO' },
-  { label: 'Protocolo', value: 'PROTOCOLO' },
-  { label: 'Perícia', value: 'PERICIA' },
-  { label: 'Acordo', value: 'ACORDO' },
-  { label: 'Outros', value: 'OUTROS' },
-]
-
-function tipoLabel(tipo: string) {
-  return (
-    tiposEvento.find((tipoEvento) => tipoEvento.value === tipo)?.label ?? tipo
-  )
-}
-
-function tipoColorHex(tipo: string) {
-  const map: Record<string, string> = {
-    AUDIENCIA: '#003366',
-    SENTENCA: '#7B1FA2',
-    RECURSO: '#C10015',
-    DESPACHO: '#00796B',
-    PROTOCOLO: '#546E7A',
-    PERICIA: '#283593',
-    ACORDO: '#2E7D32',
-    OUTROS: '#757575',
-  }
-  return map[tipo] ?? '#757575'
-}
 
 function statusLabel(status: string) {
   const map: Record<string, string> = {
@@ -473,64 +341,25 @@ function instanciaLabel(instancia: string) {
   return map[instancia] ?? instancia
 }
 
-function formVazio(): EventoForm {
-  return { titulo: '', tipo: 'OUTROS', data: '', descricao: '' }
-}
-
-function formDoEvento(evento: TimelineEvento): EventoForm {
-  return {
-    titulo: evento.titulo,
-    tipo: evento.tipo,
-    data: isoToBr(evento.data),
-    descricao: evento.descricao ?? '',
-  }
-}
-
 function abrirFormulario(evento?: TimelineEvento) {
   editandoEvento.value = evento ?? null
-  form.value = formVazio()
+  dialogAberto.value = true
+}
 
-  if (evento) {
-    form.value = formDoEvento(evento)
+function onSalvo(evento: TimelineEvento) {
+  const indice = eventos.value.findIndex((item) => item.id === evento.id)
+
+  if (indice === -1) {
+    eventos.value.push(evento)
+    return
   }
 
-  dialogAberto.value = true
+  eventos.value[indice] = evento
 }
 
 function confirmarExclusao(evento: TimelineEvento) {
   eventoParaExcluir.value = evento
   dialogExclusao.value = true
-}
-
-async function salvarEvento() {
-  if (!formRef.value) return
-  if (!(await formRef.value.validate())) return
-
-  salvando.value = true
-  try {
-    const payload = { ...form.value, data: brToIso(form.value.data) }
-
-    if (editandoEvento.value) {
-      const atualizado = await timelineService.update(
-        editandoEvento.value.id,
-        payload,
-      )
-      const idx = eventos.value.findIndex(
-        (evento) => evento.id === atualizado.id,
-      )
-      if (idx !== -1) eventos.value[idx] = atualizado
-      notification.success('Evento atualizado!')
-    } else {
-      const novo = await timelineService.create(processoId, payload)
-      eventos.value.push(novo)
-      notification.success('Evento adicionado!')
-    }
-    dialogAberto.value = false
-  } catch {
-    notification.error('Erro ao salvar evento.')
-  } finally {
-    salvando.value = false
-  }
 }
 
 async function excluirEvento() {

@@ -84,7 +84,7 @@
               :key="item.route"
               :icon="item.icon"
               :label="miniState ? undefined : item.label"
-              :class="{ active: currentRoute.startsWith(item.route) }"
+              :class="{ active: isMenuAtivo(item.path) }"
               class="menu-button"
               flat
               no-caps
@@ -95,8 +95,11 @@
       </q-scroll-area>
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container :class="{ 'modulo-container': isModulo }">
+      <router-view v-if="isModulo" />
+
       <div
+        v-else
         class="q-pa-lg q-mx-auto"
         style="max-width: 1200px"
       >
@@ -124,23 +127,53 @@ const nameUserAuth = ref('Bem Vindo!')
 const fotoUsuario = ref<string>('')
 const hoverTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
 
-const currentRoute = computed(() => (route.name as string) ?? '')
-
 const menuItems = [
-  { icon: 'home', label: 'Home', route: 'home' },
-  { icon: 'group', label: 'Clientes', route: 'clientes' },
-  { icon: 'work', label: 'Processos', route: 'processos' },
-  { icon: 'event_available', label: 'Prazos', route: 'prazos' },
-  { icon: 'folders', label: 'Documentos', route: 'pastas' },
-  { icon: 'task', label: 'Modelos de Petição', route: 'peticoes' },
+  { icon: 'home', label: 'Home', route: 'home', path: '/app/home' },
+  {
+    icon: 'group',
+    label: 'Clientes',
+    route: 'clientes',
+    path: '/app/clientes',
+  },
+  {
+    icon: 'work',
+    label: 'Processos',
+    route: 'processos',
+    path: '/app/processos',
+  },
+  {
+    icon: 'folders',
+    label: 'Documentos',
+    route: 'pastas',
+    path: '/app/pastas',
+  },
+  {
+    icon: 'task',
+    label: 'Modelos de Petição',
+    route: 'peticoes',
+    path: '/app/peticoes',
+  },
   {
     icon: 'menu_book',
     label: 'Jurisprudência',
     route: 'jurisprudencia-biblioteca',
+    path: '/app/jurisprudencia',
   },
-  { icon: 'timeline', label: 'Timeline', route: 'timelines' },
-  { icon: 'settings', label: 'Configurações', route: 'configuracoes-usuarios' },
+  {
+    icon: 'settings',
+    label: 'Configurações',
+    route: 'configuracoes-usuarios',
+    path: '/app/configuracoes',
+  },
 ]
+
+const isModulo = computed(() =>
+  route.matched.some((registro) => registro.meta.modulo),
+)
+
+function isMenuAtivo(caminho: string): boolean {
+  return route.path === caminho || route.path.startsWith(`${caminho}/`)
+}
 
 function onMouseenter() {
   hoverTimeout.value = setTimeout(() => {
@@ -177,6 +210,12 @@ function logout() {
 </script>
 
 <style scoped lang="scss">
+.modulo-container {
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .toolbar-avatar {
   width: 34px;
   height: 34px;

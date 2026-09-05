@@ -32,29 +32,53 @@ const router = createRouter({
         },
         {
           path: 'processos',
-          name: 'processos',
-          component: () => import('@/pages/processos/ProcessosPage.vue'),
-          meta: { requiresAuth: true },
-        },
-        {
-          path: 'processos/:id',
-          name: 'processo-view',
-          component: () =>
-            import('@/pages/processos/ProcessoCadastroEdicao.vue'),
-          meta: { requiresAuth: true },
-        },
-        {
-          path: 'processos/novo',
-          name: 'processo-form',
-          component: () =>
-            import('@/pages/processos/ProcessoCadastroEdicao.vue'),
-          meta: { requiresAuth: true },
+          component: () => import('@/layouts/ModuloProcessos.vue'),
+          meta: { requiresAuth: true, modulo: true },
+          children: [
+            {
+              path: '',
+              name: 'processos',
+              component: () => import('@/pages/processos/ProcessosPage.vue'),
+            },
+            {
+              path: 'movimentacoes',
+              name: 'processo-movimentacoes',
+              component: () =>
+                import('@/pages/processos/MovimentacoesPage.vue'),
+            },
+            {
+              path: 'prazos',
+              name: 'prazos',
+              component: () => import('@/pages/prazos/PrazosPage.vue'),
+            },
+            {
+              path: 'timelines',
+              name: 'timelines',
+              component: () => import('@/pages/timelines/TimelinesPage.vue'),
+            },
+            {
+              path: 'timelines/:processoId',
+              name: 'timeline-gestao',
+              component: () =>
+                import('@/pages/timelines/TimelineGestaoPage.vue'),
+            },
+            {
+              path: 'novo',
+              name: 'processo-form',
+              component: () =>
+                import('@/pages/processos/ProcessoCadastroEdicao.vue'),
+            },
+            {
+              path: ':id',
+              name: 'processo-view',
+              component: () =>
+                import('@/pages/processos/ProcessoCadastroEdicao.vue'),
+            },
+          ],
         },
         {
           path: 'prazos',
-          name: 'prazos',
-          component: () => import('@/pages/prazos/PrazosPage.vue'),
-          meta: { requiresAuth: true },
+          redirect: { name: 'prazos' },
         },
         {
           path: 'clientes',
@@ -127,15 +151,11 @@ const router = createRouter({
         },
         {
           path: 'timelines',
-          name: 'timelines',
-          component: () => import('@/pages/timelines/TimelinesPage.vue'),
-          meta: { requiresAuth: true },
+          redirect: { name: 'timelines' },
         },
         {
           path: 'timelines/:processoId',
-          name: 'timeline-gestao',
-          component: () => import('@/pages/timelines/TimelineGestaoPage.vue'),
-          meta: { requiresAuth: true },
+          redirect: (to) => ({ name: 'timeline-gestao', params: to.params }),
         },
         {
           path: 'perfil',
