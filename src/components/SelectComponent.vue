@@ -20,6 +20,7 @@
       :multiple="multiple"
       :use-chips="useChips"
       hide-bottom-space
+      :bg-color="bgColor"
     >
       <template v-if="$slots.append" #append>
         <slot name="append" />
@@ -56,6 +57,7 @@ const props = withDefaults(
     clearable?: boolean
     multiple?: boolean
     useChips?: boolean
+    bgColor?: string
   }>(),
   {
     outlined: true,
