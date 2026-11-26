@@ -142,6 +142,12 @@ const menuItems = [
     path: '/app/processos',
   },
   {
+    icon: 'payments',
+    label: 'Financeiro',
+    route: 'financeiro-contas-receber',
+    path: '/app/financeiro',
+  },
+  {
     icon: 'folders',
     label: 'Documentos',
     route: 'pastas',

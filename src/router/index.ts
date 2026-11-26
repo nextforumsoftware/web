@@ -81,6 +81,30 @@ const router = createRouter({
           redirect: { name: 'prazos' },
         },
         {
+          path: 'financeiro',
+          component: () => import('@/layouts/ModuloFinanceiro.vue'),
+          meta: { requiresAuth: true, modulo: true },
+          children: [
+            {
+              path: '',
+              name: 'financeiro-contas-receber',
+              component: () =>
+                import('@/pages/financeiro/ContasReceberPage.vue'),
+            },
+            {
+              path: 'honorarios',
+              name: 'financeiro-honorarios',
+              component: () => import('@/pages/financeiro/HonorariosPage.vue'),
+            },
+            {
+              path: 'honorarios/:id',
+              name: 'financeiro-honorario-view',
+              component: () =>
+                import('@/pages/financeiro/HonorarioDetalhePage.vue'),
+            },
+          ],
+        },
+        {
           path: 'clientes',
           name: 'clientes',
           component: () => import('@/pages/clientes/ClientesPage.vue'),
