@@ -153,8 +153,7 @@
               size="3em"
             />
             <p class="q-mt-md text-body2 text-center">
-              Nenhuma movimentação importada ainda. Clique em Sincronizar todos
-              para buscar no DataJud.
+              Nenhuma movimentação importada ainda.
             </p>
           </div>
         </template>
